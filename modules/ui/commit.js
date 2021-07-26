@@ -393,6 +393,7 @@ export function uiCommit(context) {
                     }
 
                     context.uploader().save(context.changeset);
+                    document.querySelector('.commit-changes-section .download-changes').click();
                 }
             });
 

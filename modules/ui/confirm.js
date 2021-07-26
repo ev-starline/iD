@@ -34,6 +34,20 @@ export function uiConfirm(selection) {
         return modalSelection;
     };
 
+    modalSelection.saveButton = function(callback, selection) {
+        buttons
+            .append('button')
+            .attr('class', 'button ok-button action')
+            .on('click.confirm', function() {
+                callback(selection);
+            })
+            .html('Сохранить')
+            .node()
+            .focus();
+
+        return modalSelection;
+    };
+
 
     return modalSelection;
 }

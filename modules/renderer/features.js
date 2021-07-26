@@ -583,6 +583,9 @@ export function rendererFeatures(context) {
             var hashDisabled = hash.disable_features.replace(/;/g, ',').split(',');
             hashDisabled.forEach(features.disable);
         }
+
+        features.disableAll();
+        features.toggle('traffic_roads');
     };
 
 

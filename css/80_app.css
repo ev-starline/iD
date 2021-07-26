@@ -4746,6 +4746,37 @@ img.tile-debug {
     margin: 0 10px;
 }
 
+.modal-section.message-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modal-section.message-text .input-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+    margin: 0.3rem auto;
+    width: 60%;
+}
+
+.modal-section.message-text .coords-wrapper {
+    width: 100%;
+    margin: 0.3rem 0;
+}
+
+.modal-section.message-text .coords {
+    width: 100%;
+}
+
+.modal-section.message-text .error-message {
+     display: block;
+}
+
+.modal-section.message-text .error-message.error-message_hide {
+    display: none;
+}
+
 .save-section .buttons {
     display: flex;
     flex-wrap: wrap;

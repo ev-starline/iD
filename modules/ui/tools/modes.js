@@ -13,6 +13,7 @@ import { presetManager } from '../../presets';
 import { t } from '../../core/localizer';
 import { svgIcon } from '../../svg';
 import { uiTooltip } from '../tooltip';
+import { uiConfirm } from '../confirm';
 
 export function uiToolOldDrawModes(context) {
 
@@ -23,11 +24,27 @@ export function uiToolOldDrawModes(context) {
 
     var modes = [
         modeAddPoint(context, {
+            title: 'Точка по координатам',
+            button: 'point-by-coordinates',
+            description: 'Нанести на карту точку по координатам',
+            preset: presetManager.item('point'),
+            key: null,
+            openModal: true,
+        }),
+        modeAddPoint(context, {
             title: t.html('modes.add_point.title'),
             button: 'point',
             description: t.html('modes.add_point.description'),
             preset: presetManager.item('point'),
             key: '1'
+        }),
+        modeAddLine(context, {
+            title: 'Линия по координатам',
+            button: 'line-by-coordinates',
+            description: 'Нанести на карту линию по координатам начала и конца',
+            preset: presetManager.item('line'),
+            key: null,
+            openModal: true,
         }),
         modeAddLine(context, {
             title: t.html('modes.add_line.title'),
@@ -55,15 +72,17 @@ export function uiToolOldDrawModes(context) {
     }
 
     modes.forEach(function(mode) {
-        context.keybinding().on(mode.key, function() {
-            if (!enabled(mode)) return;
+        if (mode.key) {
+            context.keybinding().on(mode.key, function() {
+                if (!enabled(mode)) return;
 
-            if (mode.id === context.mode().id) {
-                context.enter(modeBrowse(context));
-            } else {
-                context.enter(mode);
-            }
-        });
+                if (mode.id === context.mode().id) {
+                    context.enter(modeBrowse(context));
+                } else {
+                    context.enter(mode);
+                }
+            });
+        }
     });
 
     tool.render = function(selection) {
@@ -110,11 +129,38 @@ export function uiToolOldDrawModes(context) {
                     } else {
                         context.enter(d);
                     }
+
+
+                    if (d.openModal) {
+                        var selection = uiConfirm(context.container());
+                        selection
+                            .select('.modal-section.header')
+                            .append('h3')
+                            .text('Введите координаты');
+
+                        var mainSection = selection
+                            .select('.modal-section.message-text');
+
+                        var hideError = function () {
+                            mainSection
+                                .select('.error-message')
+                                .attr('class', 'error-message error-message_hide');
+                        };
+
+                        context.mode().renderContentModal(mainSection, hideError);
+
+                        mainSection
+                            .append('p')
+                            .attr('class', 'error-message error-message_hide')
+                            .text('Неверные координаты.');
+
+                        selection.saveButton(context.mode().addByCoords, selection);
+                    }
                 })
                 .call(uiTooltip()
                     .placement('bottom')
                     .title(function(d) { return d.description; })
-                    .keys(function(d) { return [d.key]; })
+                    .keys(function(d) { if (d.key !== null) return [d.key]; })
                     .scrollContainer(context.container().select('.top-toolbar'))
                 );
 

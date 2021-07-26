@@ -6,6 +6,7 @@ import { osmNode } from '../osm/node';
 import { actionAddEntity } from '../actions/add_entity';
 import { actionChangeTags } from '../actions/change_tags';
 import { actionAddMidpoint } from '../actions/add_midpoint';
+import { uiCoordinatesInputs } from '../ui/coordinates_inputs';
 
 
 export function modeAddPoint(context, mode) {
@@ -21,7 +22,7 @@ export function modeAddPoint(context, mode) {
 
     var defaultTags = {};
     if (mode.preset) defaultTags = mode.preset.setTags(defaultTags, 'point');
-
+    var coordinatesInputs = uiCoordinatesInputs();
 
     function add(loc) {
         var node = osmNode({ loc: loc, tags: defaultTags });
@@ -77,6 +78,27 @@ export function modeAddPoint(context, mode) {
         context.enter(modeBrowse(context));
     }
 
+
+    mode.renderContentModal = function(section, hideError) {
+        coordinatesInputs(section, hideError);
+    };
+
+    mode.addByCoords = function(selection) {
+        var coordinates = coordinatesInputs.getValues(selection, '.modal-section.message-text');
+
+        if (coordinatesInputs.validate(coordinates)) {
+            context.map().centerZoom([coordinates.longitude, coordinates.latitude], 21);
+            add([coordinates.longitude, coordinates.latitude]);
+
+            selection.remove();
+
+            return;
+        }
+
+        selection
+            .select('.modal-section.message-text .error-message')
+            .attr('class', 'error-message');
+    };
 
     mode.enter = function() {
         context.install(behavior);
